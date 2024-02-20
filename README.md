@@ -27,3 +27,10 @@ npm run dev
 ```sh
 npm run build
 ```
+
+
+build for android 
+
+```sh
+npm run cordova-build-android  
+```
