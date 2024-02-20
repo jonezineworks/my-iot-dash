@@ -14,7 +14,7 @@ export default {
     },
 
     // Methods are functions that mutate state and trigger updates.
-    // They can be bound as event handlers in templates.
+    // They can be bound ays event handlers in templates.
     methods: {
         connectWebsocket() {
             let that = this;
@@ -76,7 +76,7 @@ export default {
         </div>
         <div class="m-auto">
             <h2 class="text-info">Consumo Casa </h2>
-            <h1>{{ houseDataPower.toFixed(0) }} <span class="text-info small">W</span></h1>
+            <h1>{{ houseDataPower.toFixed(0) }} <span class="text-info small">W</span> {{solarDataPower > 1 ? " - " + solarDataPower.toFixed(0) + " W" : ""}}</h1>
             <p class="mb-0 text-secondary">Total Hoje</p>
             <h2>{{ houseData.Today }} <span class="text-info small">KWh</span></h2>
             ~{{ (houseData.Today * 0.14).toFixed(2) }} €
