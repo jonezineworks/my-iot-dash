@@ -30,6 +30,9 @@ npm run build
 
 
 build for android 
+
+install android studio and build tools 33.0.2
+
 ```sh
 npm install -g cordova
 ```
