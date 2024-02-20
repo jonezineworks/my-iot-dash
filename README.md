@@ -30,6 +30,9 @@ npm run build
 
 
 build for android 
+```sh
+vue add cordova
+```
 
 ```sh
 npm run cordova-build-android  
