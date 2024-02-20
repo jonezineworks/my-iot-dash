@@ -39,5 +39,9 @@ vue add cordova
 ```
 
 ```sh
+vue add cordova
+```
+
+```sh
 npm run cordova-build-android  
 ```
