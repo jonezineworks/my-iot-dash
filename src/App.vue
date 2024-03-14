@@ -90,9 +90,9 @@ export default {
             <h2 class="text-capitalize">{{ weatherData.weather[0].description }}</h2>
 
             <div class="mx-2 d-flex">
-              <h1 class="mx-2">{{ weatherData.main.temp.toFixed(0) }}<span class="text-info small">º</span>
+              <h1 class="mx-2">{{ weatherData.main.temp.toFixed(0) }}<span class="text-info small">º <i class="bi bi-thermometer-half"></i></span>
               </h1>
-              <h1 class="mx-2">{{ weatherData.main.humidity }}<span class="text-info small">%</span></h1>
+              <h1 class="mx-2">{{ weatherData.main.humidity }}<span class="text-info small">% <i class="bi bi-droplet"></i></span></h1>
             </div>
           </div>
         </div>
@@ -123,10 +123,10 @@ export default {
         ~{{ (solarData.Today * 0.14).toFixed(2) }} <span class="text-info ">€</span>
       </div>
     </div>
-    <div class="m-4 d-flex justify-content-between align-items-center">
+    <div class="m-3 d-flex justify-content-between align-items-center">
       <!-- Button trigger modal -->
-      <button type="button" class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Config
+      <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="bi bi-gear"></i>
       </button>
 
       <span class="text-light">
