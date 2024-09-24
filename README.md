@@ -48,3 +48,17 @@ vue add cordova
 ```sh
 npm run cordova-build-android  
 ```
+
+
+NOTES: 
+
+
+Add the below line in your application tag:
+
+android:usesCleartextTraffic="true"
+As shown below:
+
+<application
+....
+android:usesCleartextTraffic="true"
+....>
