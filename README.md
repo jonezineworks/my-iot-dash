@@ -47,7 +47,9 @@ npm run cordova-build-android
 ```
 
 
-NOTES: 
+NOTES:
+- You need android studio to build the final apk
+- Open android studio project under my-iot\src-cordova\platforms\android
 
 
 Add the below line in your application tag:
