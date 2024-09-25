@@ -7,16 +7,16 @@ export default {
   data() {
     return {
       myIotServer: "localhost:1880",
-      myIotServerConnected: true,
+      myIotServerConnected: false,
       isSolar: true,
       houseData: {Power: 0, Today: 0},
       houseDataPower: 0,
       solarData: {Power: 0, Today: 0},
       solarDataPower: 0,
-      weatherData: {weather: [{description: "", icon: null}], main: {temp: 0, humidity: 0}, altIcon: ""},
-      internetCheck: {online: true},
-      vergilioBridgeCheck: {online: true},
-      vascoGamaBridgeCheck: {online: true},
+      weatherData: {description: "",temp: 0, humidity: 0, icon: ""},
+      internetCheck: {online: false},
+      vergilioBridgeCheck: {online: false},
+      vascoGamaBridgeCheck: {online: false},
     }
   },
 
@@ -57,6 +57,8 @@ export default {
       this.connection.onopen = function (event) {
         console.log(event);
         console.log("Successfully connected to the echo websocket server...");
+        that.getWeather();
+        that.checkInternet();
         that.myIotServerConnected = true;
       };
 
@@ -64,6 +66,12 @@ export default {
         that.myIotServerConnected = false;
         that.connectWebsocket();
       };
+    },
+    getWeather() {
+      fetch('http://' + this.myIotServer + '/weather');
+    },
+    checkInternet() {
+      fetch('http://' + this.myIotServer + '/checkInternet');
     }
   },
   watch: {
@@ -85,8 +93,8 @@ export default {
       this.isSolar = window.localStorage.getItem("isSolar") === 'true';
     }
     this.connectWebsocket();
-    fetch('http://' + this.myIotServer + '/weather');
-    fetch('http://' + this.myIotServer + '/checkInternet');
+    //this.getWeather();
+    //this.checkInternet();
   }
 }
 </script>
@@ -98,14 +106,14 @@ export default {
       <div class="m-auto p-4 text-light rounded-2 ">
         <div class="d-flex align-content-center">
           <div class="mx-2 text-center d-flex flex-column justify-content-center align-content-center">
-            <img class="m-auto" :src="weatherData.altIcon" alt="" width="120"/>
-            <h2 class="text-capitalize">{{ weatherData.weather[0].description }}</h2>
+            <img class="m-auto" :src="weatherData.icon" alt="" width="120"/>
+            <h2 class="text-capitalize">{{ weatherData.description }}</h2>
 
             <div class="mx-2 d-flex">
-              <h1 class="mx-2">{{ weatherData.main.temp.toFixed(0) }}<span class="text-info small">ºC <i
+              <h1 class="mx-2">{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC <i
                 class="bi bi-thermometer-half"></i></span>
               </h1>
-              <h1 class="mx-2">{{ weatherData.main.humidity }}<span class="text-info small">% <i
+              <h1 class="mx-2">{{ weatherData.humidity }}<span class="text-info small">% <i
                 class="bi bi-droplet"></i></span></h1>
             </div>
           </div>
