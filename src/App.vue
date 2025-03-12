@@ -8,12 +8,17 @@ export default {
     return {
       myIotServer: "localhost:1880",
       myIotServerConnected: false,
-      isSolar: true,
+      showHouse: true,
+      showSolar: true,
+      showCar1: false,
+      showCar2: false,
       houseData: {Power: 0, Today: 0},
       houseDataPower: 0,
       solarData: {Power: 0, Today: 0},
       solarDataPower: 0,
-      weatherData: {description: "",temp: 0, humidity: 0, icon: ""},
+      car1Data: {Power: 0, Today: 0},
+      car2Data: {Power: 0, Today: 0},
+      weatherData: {description: "", temp: 0, humidity: 0, icon: ""},
       internetCheck: {online: false},
       vergilioBridgeCheck: {online: false},
       vascoGamaBridgeCheck: {online: false},
@@ -25,7 +30,7 @@ export default {
   methods: {
     saveConfig() {
       window.localStorage.setItem("myIotServer", this.myIotServer);
-      window.localStorage.setItem("isSolar", this.isSolar);
+      window.localStorage.setItem("isSolar", this.showSolar);
     },
     connectWebsocket() {
       let that = this;
@@ -90,7 +95,7 @@ export default {
       this.myIotServer = window.localStorage.getItem("myIotServer");
     }
     if (window.localStorage.getItem("isSolar")) {
-      this.isSolar = window.localStorage.getItem("isSolar") === 'true';
+      this.showSolar = window.localStorage.getItem("isSolar") === 'true';
     }
     this.connectWebsocket();
     //this.getWeather();
@@ -100,68 +105,108 @@ export default {
 </script>
 
 <template>
-  <div class="vh-100 vh-100 m-0 text-light bg-dark rounded-4 d-flex flex-column">
+  <div class="vh-100 vh-100 m-0 text-light bg-dark rounded-4 d-flex flex-column justify-content-between">
 
-    <div class="flex-fill d-flex justify-content-center align-content-center">
-      <div class="m-auto p-4 text-light rounded-2 ">
-        <div class="d-flex align-content-center">
-          <div class="mx-2 text-center d-flex flex-column justify-content-center align-content-center">
-            <img class="m-auto" :src="weatherData.icon" alt="" width="120"/>
-            <h2 class="text-capitalize">{{ weatherData.description }}</h2>
-
-            <div class="mx-2 d-flex">
-              <h1 class="mx-2">{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC <i
-                class="bi bi-thermometer-half"></i></span>
-              </h1>
-              <h1 class="mx-2">{{ weatherData.humidity }}<span class="text-info small">% <i
-                class="bi bi-droplet"></i></span></h1>
-            </div>
-          </div>
+    <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-black bg-opacity-25">
+      <div class="p-3 text-center d-flex align-content-center">
+        <div class="mx-2 d-flex">
+          <h2 class="mx-2"><i
+            class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
+          </h2>
+          <h1 class="mx-2"><i
+            class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h1>
         </div>
+        <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
+        <!--<img class="m-auto" v-if="weatherData.icon" :src="weatherData.icon" alt="" width="120"/>-->
       </div>
     </div>
 
-    <div class="flex-fill d-flex justify-content-center align-content-center">
-      <div class="m-auto">
-        <h2 class="text-info">Consumo Casa <i class="bi bi-lightning-fill text-light"></i></h2>
-        <h1>
+    <div class="flex-fill d-flex justify-content-center align-content-center ">
+
+      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showHouse">
+        <h2 class="mb-0 text-info"><i class="bi bi-lightning-fill text-light"/> Consumo Casa</h2>
+        <hr/>
+        <h1 style="font-size: 4rem; line-height: 3rem" :class="houseData.Power === 0 ? 'opacity-25':''">
           {{ houseDataPower.toFixed(0) }} <span class="text-info small">W</span>
           <span class="text-success"
                 style="font-size: 1.5rem">{{ solarDataPower > 1 ? " -" + solarDataPower.toFixed(0) : "" }}</span>
-          <span class="text-success" v-if="solarDataPower > 1"
-                style="font-size: 1.5rem;">W</span>
-          <img class="mx-1 mt-2  blink-1" v-if="solarDataPower > 1" src=""
-               width="30"/>
+          <span class="text-success" v-if="solarDataPower > 1" style="font-size: 1.5rem;">W</span>
+          <img class="mx-1 mt-2  blink-1" v-if="solarDataPower > 1" src="" width="30" alt=""/>
         </h1>
         <p class="mb-0 text-secondary">Total Hoje</p>
-        <div class="d-flex gap-4">
-          <h2>{{ houseData.Today.toFixed(3) }} <span class="text-info small ">KWh</span></h2>
-          <h2>{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>
-        </div>
+        <h2 class="mb-0" style="line-height: 1.6rem;" :class="houseData.Today === 0 ? 'opacity-25':''">
+          {{ houseData.Today.toFixed(3) }} <span class="text-info small ">kWh</span>
+        </h2>
+        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
+        <hr/>
+        <p class="mb-0 text-secondary">Total Mes</p>
+        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (houseData.Today * 0.14).toFixed(2) }} <span
+          class="text-warning">€</span></h1>
       </div>
-      <div class="m-auto" v-if="isSolar">
-        <h2 class="text-info">Energia Solar <i class="bi bi-brightness-high-fill text-light"></i></h2>
-        <h1 :class="solarDataPower === 0 ? 'text-secondary': ''">
-          {{ solarDataPower.toFixed(0) }} <span
-          :class="solarDataPower === 0 ? 'text-info-emphasis': 'text-info' + ' small'">W</span>
+
+
+      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showSolar">
+        <h2 class="mb-0 text-info"><i class="bi bi-brightness-high-fill text-light"/> Energia Solar</h2>
+        <hr/>
+        <h1 style="font-size: 4rem; line-height: 3rem" :class="solarData.Power === 0 ? 'opacity-25':''">
+          {{ solarDataPower.toFixed(0) }} <span class="text-info small">W</span>
         </h1>
         <p class="mb-0 text-secondary">Total Hoje</p>
-        <div class="d-flex gap-4">
-          <h2> {{ solarData.Today.toFixed(3) }} <span class="text-info small ">KWh</span></h2>
-          <h2> {{ (solarData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>
-        </div>
+        <h2 class="mb-0" style="line-height: 1.6rem;" :class="solarData.Today === 0 ? 'opacity-25':''">
+          {{ solarData.Today.toFixed(3) }} <span class="text-info small ">kWh</span>
+        </h2>
+        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
+        <hr/>
+        <p class="mb-0 text-secondary">Total Mes</p>
+        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (solarData.Today * 0.14).toFixed(2) }} <span
+          class="text-warning">€</span></h1>
       </div>
+
+      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showCar1">
+        <h2 class="mb-0 text-info"><i class="bi bi-car-front-fill text-light"/> Carregador EV</h2>
+        <hr/>
+        <h1 style="font-size: 4rem; line-height: 3rem">
+          {{ car1Data.Power.toFixed(0) }} <span class="text-info small">W</span>
+        </h1>
+        <p class="mb-0 text-secondary">Total Hoje</p>
+        <h2 class="mb-0" style="line-height: 1.6rem;">{{ car1Data.Today.toFixed(3) }} <span
+          class="text-info small ">kWh</span>
+        </h2>
+        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
+        <hr/>
+        <p class="mb-0 text-secondary">Total Mes</p>
+        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (car1Data.Today * 0.14).toFixed(2) }} <span
+          class="text-warning">€</span></h1>
+      </div>
+
+      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showCar2">
+        <h2 class="mb-0 text-info"><i class="bi bi-car-front-fill text-light"/> Carregador EV2</h2>
+        <hr/>
+        <h1 style="font-size: 4rem; line-height: 3rem">
+          {{ car2Data.Power.toFixed(0) }} <span class="text-info small">W</span>
+        </h1>
+        <p class="mb-0 text-secondary">Total Hoje</p>
+        <h2 class="mb-0" style="line-height: 1.6rem;">{{ car2Data.Today.toFixed(3) }} <span
+          class="text-info small ">kWh</span>
+        </h2>
+        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
+        <hr/>
+        <p class="mb-0 text-secondary">Total Mes</p>
+        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (car2Data.Today * 0.14).toFixed(2) }} <span
+          class="text-warning">€</span></h1>
+      </div>
+
     </div>
 
-    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4 "
-         style="background: rgba(0,0,0,0.2); font-size: 1.2rem;">
+    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4 bg-black bg-opacity-25"
+         style="font-size: 1.4rem;">
       <div class="d-flex gap-4 align-items-center">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
           <i class="bi bi-gear"></i>
         </button>
         <div class="text-light">
-          MyIOTServer
+          MyIoTServer
           <i :class="myIotServerConnected ? 'text-success':'text-danger blink-2'" class="bi bi-check-circle-fill"></i>
         </div>
       </div>
@@ -200,16 +245,36 @@ export default {
           </div>
           <div class="modal-body">
 
-            <label for="myIotServerInput" class="form-label">MyIOTServer</label>
+            <label for="myIotServerInput" class="form-label">MyIoT Server Address</label>
             <div class="input-group mb-3">
               <input type="text" class="form-control" id="myIotServerInput" aria-describedby="basic-addon3"
                      v-model="myIotServer">
             </div>
 
+            <p>GUI Config</p>
 
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="isSolar" v-model="isSolar">
-              <label class="form-check-label" for="isSolar">Solar Input</label>
+              <input class="form-check-input" type="checkbox" id="showHouse" v-model="showHouse">
+              <label class="form-check-label" for="showHouse">show-house-power</label>
+              <span class="font-monospace"> (myiot/house/power)</span>
+            </div>
+            <hr>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showSolar" v-model="showSolar">
+              <label class="form-check-label" for="showSolar">show-solar-power</label>
+              <span class="font-monospace"> (myiot/solar/power)</span>
+            </div>
+            <hr>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showCar1" v-model="showCar1">
+              <label class="form-check-label" for="showCar1">show-car1-power</label>
+              <span class="font-monospace"> (myiot/car1/power)</span>
+            </div>
+            <hr>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showCar2" v-model="showCar2">
+              <label class="form-check-label" for="showCar2">show-car2-power</label>
+              <span class="font-monospace"> (myiot/car2/power)</span>
             </div>
 
           </div>
