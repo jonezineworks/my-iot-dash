@@ -1,7 +1,9 @@
 <script xmlns="http://www.w3.org/1999/html">
 import gsap from 'gsap';
+import PowerStatus from "@/PowerStatus.vue";
 
 export default {
+  components: {PowerStatus},
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
   data() {
@@ -123,78 +125,10 @@ export default {
 
     <div class="flex-fill d-flex justify-content-center align-content-center ">
 
-      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showHouse">
-        <h2 class="mb-0 text-info"><i class="bi bi-lightning-fill text-light"/> Consumo Casa</h2>
-        <hr/>
-        <h1 style="font-size: 4rem; line-height: 3rem" :class="houseData.Power === 0 ? 'opacity-25':''">
-          {{ houseDataPower.toFixed(0) }} <span class="text-info small">W</span>
-          <span class="text-success"
-                style="font-size: 1.5rem">{{ solarDataPower > 1 ? " -" + solarDataPower.toFixed(0) : "" }}</span>
-          <span class="text-success" v-if="solarDataPower > 1" style="font-size: 1.5rem;">W</span>
-          <img class="mx-1 mt-2  blink-1" v-if="solarDataPower > 1" src="" width="30" alt=""/>
-        </h1>
-        <p class="mb-0 text-secondary">Total Hoje</p>
-        <h2 class="mb-0" style="line-height: 1.6rem;" :class="houseData.Today === 0 ? 'opacity-25':''">
-          {{ houseData.Today.toFixed(3) }} <span class="text-info small ">kWh</span>
-        </h2>
-        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
-        <hr/>
-        <p class="mb-0 text-secondary">Total Mes</p>
-        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (houseData.Today * 0.14).toFixed(2) }} <span
-          class="text-warning">€</span></h1>
-      </div>
-
-
-      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showSolar">
-        <h2 class="mb-0 text-info"><i class="bi bi-brightness-high-fill text-light"/> Energia Solar</h2>
-        <hr/>
-        <h1 style="font-size: 4rem; line-height: 3rem" :class="solarData.Power === 0 ? 'opacity-25':''">
-          {{ solarDataPower.toFixed(0) }} <span class="text-info small">W</span>
-        </h1>
-        <p class="mb-0 text-secondary">Total Hoje</p>
-        <h2 class="mb-0" style="line-height: 1.6rem;" :class="solarData.Today === 0 ? 'opacity-25':''">
-          {{ solarData.Today.toFixed(3) }} <span class="text-info small ">kWh</span>
-        </h2>
-        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
-        <hr/>
-        <p class="mb-0 text-secondary">Total Mes</p>
-        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (solarData.Today * 0.14).toFixed(2) }} <span
-          class="text-warning">€</span></h1>
-      </div>
-
-      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showCar1">
-        <h2 class="mb-0 text-info"><i class="bi bi-car-front-fill text-light"/> Carregador EV</h2>
-        <hr/>
-        <h1 style="font-size: 4rem; line-height: 3rem">
-          {{ car1Data.Power.toFixed(0) }} <span class="text-info small">W</span>
-        </h1>
-        <p class="mb-0 text-secondary">Total Hoje</p>
-        <h2 class="mb-0" style="line-height: 1.6rem;">{{ car1Data.Today.toFixed(3) }} <span
-          class="text-info small ">kWh</span>
-        </h2>
-        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
-        <hr/>
-        <p class="mb-0 text-secondary">Total Mes</p>
-        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (car1Data.Today * 0.14).toFixed(2) }} <span
-          class="text-warning">€</span></h1>
-      </div>
-
-      <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow" v-if="showCar2">
-        <h2 class="mb-0 text-info"><i class="bi bi-car-front-fill text-light"/> Carregador EV2</h2>
-        <hr/>
-        <h1 style="font-size: 4rem; line-height: 3rem">
-          {{ car2Data.Power.toFixed(0) }} <span class="text-info small">W</span>
-        </h1>
-        <p class="mb-0 text-secondary">Total Hoje</p>
-        <h2 class="mb-0" style="line-height: 1.6rem;">{{ car2Data.Today.toFixed(3) }} <span
-          class="text-info small ">kWh</span>
-        </h2>
-        <!--<h2 class="mb-0">{{ (houseData.Today * 0.14).toFixed(2) }} <span class="text-warning">€</span></h2>-->
-        <hr/>
-        <p class="mb-0 text-secondary">Total Mes</p>
-        <h1 class="mb-0" style="line-height: 1.6rem;">{{ (car2Data.Today * 0.14).toFixed(2) }} <span
-          class="text-warning">€</span></h1>
-      </div>
+      <PowerStatus title="Consumo Casa"  title-icon="bi-lightning-fill" :data="houseData" v-if="showHouse"/>
+      <PowerStatus title="Energia Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar"/>
+      <PowerStatus title="Consumo EV"    title-icon="bi-lightning-fill" :data="car1Data"  v-if="showCar1"/>
+      <PowerStatus title="Consumo EV2"   title-icon="bi-lightning-fill" :data="car2Data"  v-if="showCar2"/>
 
     </div>
 
@@ -291,6 +225,16 @@ export default {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+.text-monospace {
+  font-family: "Chivo Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
 h1 {
   font-size: 2rem;
 }
