@@ -109,14 +109,14 @@ export default {
   <div class="vh-100 vh-100 m-0 text-light bg-gradient-dark-2 rounded-4 d-flex flex-column justify-content-between">
 
     <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-blue bg-opacity-25">
-      <div class="p-3 text-center d-flex align-content-center">
+      <div class="p-2 text-center d-flex align-content-center">
           <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
 
         <div class="mx-2 d-flex">
-          <h2 class="mx-2"><i
+          <h2 class="my-0 mx-2"><i
             class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
           </h2>
-          <h1 class="mx-2"><i
+          <h1 class="my-0 mx-2"><i
             class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h1>
         </div>
 
@@ -128,22 +128,18 @@ export default {
 
       <PowerStatus title="Consumo Casa"  title-icon="bi-lightning-fill" :data="houseData" v-if="showHouse"/>
       <PowerStatus title="Energia Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar"/>
-      <PowerStatus title="Consumo BEV"    title-icon="bi-lightning-fill" :data="car1Data"  v-if="showCar1"/>
-      <PowerStatus title="Consumo BEV2"   title-icon="bi-lightning-fill" :data="car2Data"  v-if="showCar2"/>
+      <PowerStatus title="Consumo BEV"    title-icon="bi-ev-front" :data="car1Data"  v-if="showCar1"/>
+      <PowerStatus title="Consumo BEV2"   title-icon="bi-ev-front" :data="car2Data"  v-if="showCar2"/>
 
     </div>
 
-    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4 bg-dark bg-opacity-25"
+    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4"
          style="font-size: 1.4rem;">
       <div class="d-flex gap-4 align-items-center">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-info bg-cyan-gradient py-2 px-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
           <i class="bi bi-gear"></i>
         </button>
-        <div class="text-light">
-          zine-iot-server
-          <i :class="myIotServerConnected ? 'text-success':'text-danger blink-2'" class="bi bi-check-circle-fill"></i>
-        </div>
       </div>
 
 
@@ -170,11 +166,15 @@ export default {
           </div>
           <div class="modal-body">
 
-            <label for="myIotServerInput" class="form-label">MyIoT Server Address</label>
+            <label for="myIotServerInput" class="form-label">zine-iot-server Address</label>
             <div class="input-group mb-3">
               <input type="text" class="form-control" id="myIotServerInput" aria-describedby="basic-addon3"
                      v-model="myIotServer">
-              <button class="btn btn-outline-primary" type="button" @click="connectWebsocket()">Apply</button>
+              <button class="btn btn-outline-primary bg-cyan-gradient" type="button" @click="connectWebsocket()">Apply</button>
+            </div>
+            <div class="mb-3">
+              zine-iot-server
+              <i :class="myIotServerConnected ? 'text-success':'text-danger blink-2'" class="bi bi-check-circle-fill"></i>
             </div>
 
             <p>GUI Config</p>
@@ -205,8 +205,8 @@ export default {
 
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="saveConfig()">Save changes
+            <button type="button" class="btn btn-secondary bg-cyan-gradient" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary bg-cyan-gradient" data-bs-dismiss="modal" @click="saveConfig()">Save changes
             </button>
           </div>
         </div>
@@ -260,6 +260,16 @@ body {
 
 .bg-gradient-dark {
     background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.bg-cyan-gradient {
+    background: linear-gradient(325deg, #00A7DC 16.5%, #00cddc 48.2%, #01dccf 80.24%) !important;
+    border: none !important;
+    color: white !important;
+}
+
+.btn {
+    border-radius: 50rem !important;
 }
 </style>
 
