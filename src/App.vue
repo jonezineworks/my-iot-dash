@@ -14,6 +14,7 @@ export default {
       showSolar: true,
       showCar1: false,
       showCar2: false,
+      showWeather: true,
       houseData: {Power: 0, Today: 0},
       houseDataPower: 0,
       solarData: {Power: 0, Today: 0},
@@ -34,6 +35,7 @@ export default {
       window.localStorage.setItem("showSolar", this.showSolar);
       window.localStorage.setItem("showCar1", this.showCar1);
       window.localStorage.setItem("showCar2", this.showCar2);
+      window.localStorage.setItem("showWeather", this.showWeather);
     },
     connectWebsocket() {
       let that = this;
@@ -110,6 +112,9 @@ export default {
     if (window.localStorage.getItem("showCar2")) {
       this.showCar2 = window.localStorage.getItem("showCar2") === 'true';
     }
+    if (window.localStorage.getItem("showWeather")) {
+      this.showWeather = window.localStorage.getItem("showWeather") === 'true';
+    }
     this.connectWebsocket();
     //this.getWeather();
     //this.checkInternet();
@@ -120,8 +125,8 @@ export default {
 <template>
   <div class="vh-100 vh-100 m-0 text-light bg-gradient-dark-2 rounded-4 d-flex flex-column justify-content-between">
 
-    <div class="d-flex justify-content-center">
-      <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-blue bg-opacity-25 px-4">
+    <div class="d-flex justify-content-center" v-if="showWeather">
+      <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-dark bg-opacity-25 px-5">
         <div class="p-2 text-center d-flex align-content-center">
             <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
 
@@ -151,7 +156,7 @@ export default {
          style="font-size: 1.4rem;">
       <div class="d-flex gap-4 align-items-center">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-info bg-cyan-gradient py-2 px-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-info text-dark bg-cyan-gradient py-2 px-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
           <i class="bi bi-gear"></i>
         </button>
       </div>
@@ -215,6 +220,12 @@ export default {
               <input class="form-check-input" type="checkbox" id="showCar2" v-model="showCar2">
               <label class="form-check-label" for="showCar2">show-car2-power</label>
               <span class="font-monospace"> (myiot/car2/power)</span>
+            </div>
+            <hr>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showWeather" v-model="showWeather">
+              <label class="form-check-label" for="showWeather">show-weather</label>
+              <span class="font-monospace"> (top-weather-div)</span>
             </div>
 
           </div>
