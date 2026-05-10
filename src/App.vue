@@ -22,8 +22,6 @@ export default {
       car2Data: {Power: 0, Today: 0},
       weatherData: {description: "", temp: 0, humidity: 0, icon: ""},
       internetCheck: {online: false},
-      vergilioBridgeCheck: {online: false},
-      vascoGamaBridgeCheck: {online: false},
     }
   },
 
@@ -37,6 +35,13 @@ export default {
     connectWebsocket() {
       let that = this;
       console.log("Starting connection to WebSocket Server");
+
+      if (this.connection) {
+        console.log("Closing existing connection");
+        this.connection.onclose = null; // Prevent auto-reconnect during manual switch
+        this.connection.close();
+      }
+
       this.connection = new WebSocket("ws://" + this.myIotServer + "/");
 
       this.connection.onmessage = function (event) {
@@ -52,12 +57,6 @@ export default {
         }
         if (wsData.measureType === 'internetCheck') {
           that.internetCheck = wsData;
-        }
-        if (wsData.measureType === 'vergilioBridgeCheck') {
-          that.vergilioBridgeCheck = wsData;
-        }
-        if (wsData.measureType === 'vascoGamaBridgeCheck') {
-          that.vascoGamaBridgeCheck = wsData;
         }
       };
 
@@ -107,10 +106,12 @@ export default {
 </script>
 
 <template>
-  <div class="vh-100 vh-100 m-0 text-light bg-dark rounded-4 d-flex flex-column justify-content-between">
+  <div class="vh-100 vh-100 m-0 text-light bg-gradient-dark-2 rounded-4 d-flex flex-column justify-content-between">
 
-    <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-black bg-opacity-25">
+    <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-blue bg-opacity-25">
       <div class="p-3 text-center d-flex align-content-center">
+          <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
+
         <div class="mx-2 d-flex">
           <h2 class="mx-2"><i
             class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
@@ -118,7 +119,7 @@ export default {
           <h1 class="mx-2"><i
             class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h1>
         </div>
-        <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
+
         <!--<img class="m-auto" v-if="weatherData.icon" :src="weatherData.icon" alt="" width="120"/>-->
       </div>
     </div>
@@ -127,12 +128,12 @@ export default {
 
       <PowerStatus title="Consumo Casa"  title-icon="bi-lightning-fill" :data="houseData" v-if="showHouse"/>
       <PowerStatus title="Energia Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar"/>
-      <PowerStatus title="Consumo EV"    title-icon="bi-lightning-fill" :data="car1Data"  v-if="showCar1"/>
-      <PowerStatus title="Consumo EV2"   title-icon="bi-lightning-fill" :data="car2Data"  v-if="showCar2"/>
+      <PowerStatus title="Consumo BEV"    title-icon="bi-lightning-fill" :data="car1Data"  v-if="showCar1"/>
+      <PowerStatus title="Consumo BEV2"   title-icon="bi-lightning-fill" :data="car2Data"  v-if="showCar2"/>
 
     </div>
 
-    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4 bg-black bg-opacity-25"
+    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4 bg-dark bg-opacity-25"
          style="font-size: 1.4rem;">
       <div class="d-flex gap-4 align-items-center">
         <!-- Button trigger modal -->
@@ -140,7 +141,7 @@ export default {
           <i class="bi bi-gear"></i>
         </button>
         <div class="text-light">
-          MyIoTServer
+          zine-iot-server
           <i :class="myIotServerConnected ? 'text-success':'text-danger blink-2'" class="bi bi-check-circle-fill"></i>
         </div>
       </div>
@@ -149,16 +150,6 @@ export default {
       <div class="d-flex gap-4 align-items-center">
 
         <div class="d-flex align-items-center">
-
-          <span class="text-light mx-2">Vergilio</span>
-          <i :class="vergilioBridgeCheck.online ? 'text-success':'text-danger blink-2'" class="bi bi-wifi me-2"
-             style="transform: rotate(90deg)"></i>
-
-          <i :class="vascoGamaBridgeCheck.online ? 'text-success':'text-danger blink-2'" class="bi bi-wifi ms-2"
-             style="transform: rotate(-90deg)"></i>
-          <span class="text-light mx-2">VascoGama</span>
-
-          <hr class="mx-2 text-light" style="width: 1rem;"/>
 
           <span class="text-light mx-2">Internet</span>
           <i :class="internetCheck.online ? 'text-success':'text-danger blink-2'"
@@ -183,6 +174,7 @@ export default {
             <div class="input-group mb-3">
               <input type="text" class="form-control" id="myIotServerInput" aria-describedby="basic-addon3"
                      v-model="myIotServer">
+              <button class="btn btn-outline-primary" type="button" @click="connectWebsocket()">Apply</button>
             </div>
 
             <p>GUI Config</p>
@@ -224,10 +216,54 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style>
+/* GLOBAL STYLES */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap');
 
+body {
+    font-family: 'Inter', sans-serif !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+}
 
+/* TEXT COLORS */
+.text-blue {
+    color: #2563eb;
+}
+
+.text-gray {
+    color: #64748b;
+}
+
+.text-white {
+    color: white;
+}
+
+/* BACKGROUNDS */
+.bg-blue {
+    background: #2563eb;
+}
+
+.bg-dark {
+    background: #0f172a;
+}
+
+.bg-gradient-blue {
+    background: linear-gradient(326deg, #0a0a28 7.97%, #094649 97.66%);
+
+}
+
+.bg-gradient-dark-2 {
+    background: linear-gradient(180deg, #0a1428 0%, #020206 100%);
+}
+
+.bg-gradient-dark {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+</style>
+
+<style scoped>
 .text-monospace {
   font-family: "Chivo Mono", monospace;
   font-optical-sizing: auto;
@@ -240,7 +276,7 @@ h1 {
 }
 
 body, html, #app {
-  background: black;
+  background: black !important;
 }
 
 .blink-1 {
@@ -324,5 +360,4 @@ body, html, #app {
     opacity: 0.3;
   }
 }
-
 </style>

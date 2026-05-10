@@ -1,5 +1,5 @@
 <template>
-  <div class="m-auto p-4 text-end bg-black bg-opacity-25 rounded-4 shadow">
+  <div class="m-auto p-4 text-end bg-gradient-dark bg-opacity-25 rounded-4 shadow">
     <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
     <hr/>
     <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25':''">
@@ -41,9 +41,6 @@ export default {
 }
 </script>
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap');
-
-
 .text-monospace {
   font-family: "Chivo Mono", monospace;
   font-optical-sizing: auto;
