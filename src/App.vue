@@ -30,7 +30,10 @@ export default {
   methods: {
     saveConfig() {
       window.localStorage.setItem("myIotServer", this.myIotServer);
-      window.localStorage.setItem("isSolar", this.showSolar);
+      window.localStorage.setItem("showHouse", this.showHouse);
+      window.localStorage.setItem("showSolar", this.showSolar);
+      window.localStorage.setItem("showCar1", this.showCar1);
+      window.localStorage.setItem("showCar2", this.showCar2);
     },
     connectWebsocket() {
       let that = this;
@@ -95,8 +98,17 @@ export default {
     if (window.localStorage.getItem("myIotServer")) {
       this.myIotServer = window.localStorage.getItem("myIotServer");
     }
-    if (window.localStorage.getItem("isSolar")) {
-      this.showSolar = window.localStorage.getItem("isSolar") === 'true';
+    if (window.localStorage.getItem("showHouse")) {
+      this.showHouse = window.localStorage.getItem("showHouse") === 'true';
+    }
+    if (window.localStorage.getItem("showSolar")) {
+      this.showSolar = window.localStorage.getItem("showSolar") === 'true';
+    }
+    if (window.localStorage.getItem("showCar1")) {
+      this.showCar1 = window.localStorage.getItem("showCar1") === 'true';
+    }
+    if (window.localStorage.getItem("showCar2")) {
+      this.showCar2 = window.localStorage.getItem("showCar2") === 'true';
     }
     this.connectWebsocket();
     //this.getWeather();
@@ -108,19 +120,21 @@ export default {
 <template>
   <div class="vh-100 vh-100 m-0 text-light bg-gradient-dark-2 rounded-4 d-flex flex-column justify-content-between">
 
-    <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-blue bg-opacity-25">
-      <div class="p-2 text-center d-flex align-content-center">
-          <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
+    <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-blue bg-opacity-25 px-4">
+        <div class="p-2 text-center d-flex align-content-center">
+            <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
 
-        <div class="mx-2 d-flex">
-          <h2 class="my-0 mx-2"><i
-            class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
-          </h2>
-          <h1 class="my-0 mx-2"><i
-            class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h1>
+          <div class="mx-2 d-flex">
+            <h2 class="my-0 mx-2"><i
+              class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
+            </h2>
+            <h2 class="my-0 mx-2"><i
+              class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h2>
+          </div>
+
+          <!--<img class="m-auto" v-if="weatherData.icon" :src="weatherData.icon" alt="" width="120"/>-->
         </div>
-
-        <!--<img class="m-auto" v-if="weatherData.icon" :src="weatherData.icon" alt="" width="120"/>-->
       </div>
     </div>
 
