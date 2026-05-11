@@ -16,6 +16,8 @@ export default {
       showCar1: false,
       showCar2: false,
       showWeather: true,
+      showClock: true,
+      currentTime: "",
       houseData: {Power: 0, Today: 0},
       houseDataPower: 0,
       solarData: {Power: 0, Today: 0},
@@ -39,6 +41,7 @@ export default {
       window.localStorage.setItem("showCar1", this.showCar1);
       window.localStorage.setItem("showCar2", this.showCar2);
       window.localStorage.setItem("showWeather", this.showWeather);
+      window.localStorage.setItem("showClock", this.showClock);
     },
     connectWebsocket() {
       let that = this;
@@ -135,6 +138,10 @@ export default {
     },
     closeDetail() {
       this.selectedPower = null;
+    },
+    updateClock() {
+      const now = new Date();
+      this.currentTime = now.toLocaleTimeString('pt-PT', { hour12: false, hour: '2-digit', minute: '2-digit' });
     }
   },
   watch: {
@@ -167,6 +174,11 @@ export default {
     if (window.localStorage.getItem("showWeather")) {
       this.showWeather = window.localStorage.getItem("showWeather") === 'true';
     }
+    if (window.localStorage.getItem("showClock")) {
+      this.showClock = window.localStorage.getItem("showClock") === 'true';
+    }
+    this.updateClock();
+    this.clockInterval = setInterval(this.updateClock, 10000);
     this.connectWebsocket();
     //this.getWeather();
     //this.checkInternet();
@@ -176,25 +188,32 @@ export default {
       this.connection.onclose = null;
       this.connection.close();
     }
+    if (this.clockInterval) {
+      clearInterval(this.clockInterval);
+    }
     this.stopHeartbeat();
   }
 }
 </script>
 
 <template>
-  <div class="vh-100 vh-100 m-0 text-light bg-gradient-dark-2 rounded-4 d-flex flex-column justify-content-between">
+  <div class="vh-100 vh-100 m-0 text-light bg-main-glow rounded-4 d-flex flex-column justify-content-between">
+
+    <div class="d-flex justify-content-center mt-4" v-if="showClock && !selectedPower">
+      <h1 class="clock-display">{{ currentTime }}</h1>
+    </div>
 
     <div class="d-flex justify-content-center" v-if="showWeather && !selectedPower">
-      <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-dark bg-opacity-25 px-5">
-        <div class="p-2 text-center d-flex align-content-center">
-            <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
+      <div class="d-flex justify-content-around align-content-center rounded-bottom-4 px-5">
+        <div class="p-3 text-center d-flex align-content-center">
+            <h3 class="mb-0 ml-4 text-capitalize opacity-75">{{ weatherData.description }}</h3>
 
           <div class="mx-2 d-flex">
-            <h2 class="my-0 mx-2"><i
+            <h3 class="my-0 mx-2"><i
               class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
-            </h2>
-            <h2 class="my-0 mx-2"><i
-              class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h2>
+            </h3>
+            <h3 class="my-0 mx-2"><i
+              class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h3>
           </div>
 
           <!--<img class="m-auto" v-if="weatherData.icon" :src="weatherData.icon" alt="" width="120"/>-->
@@ -204,7 +223,7 @@ export default {
 
     <div class="flex-fill d-flex justify-content-center align-content-center " v-if="!selectedPower">
 
-      <PowerStatus title="Rede"  title-icon="bi-lightning-fill" :data="houseData" v-if="showHouse" @show-detail="showDetail('house', 'Rede', 'bi-lightning-fill')"/>
+      <PowerStatus title="Rede"  title-icon="bi-lightning-charge-fill" :data="houseData" v-if="showHouse" @show-detail="showDetail('house', 'Rede', 'bi-lightning-charge-fill')"/>
       <PowerStatus title="Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar" @show-detail="showDetail('solar', 'Solar', 'bi-brightness-high-fill')"/>
       <PowerStatus title="BEV"    title-icon="bi-ev-front" :data="car1Data"  v-if="showCar1" @show-detail="showDetail('car1', 'BEV', 'bi-ev-front')"/>
       <PowerStatus title="BEV2"   title-icon="bi-ev-front" :data="car2Data"  v-if="showCar2" @show-detail="showDetail('car2', 'BEV2', 'bi-ev-front')"/>
@@ -219,7 +238,7 @@ export default {
         @close="closeDetail"
     />
 
-    <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4"
+    <div class="m-0 py-3 px-4 d-flex justify-content-between align-items-center rounded-top-4"
          style="font-size: 1.4rem;">
       <div class="d-flex gap-4 align-items-center">
         <!-- Button trigger modal -->
@@ -294,6 +313,12 @@ export default {
               <label class="form-check-label" for="showWeather">show-weather</label>
               <span class="font-monospace"> (top-weather-div)</span>
             </div>
+            <hr>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="showClock" v-model="showClock">
+              <label class="form-check-label" for="showClock">show-clock</label>
+              <span class="font-monospace"> (top-clock-div)</span>
+            </div>
 
           </div>
           <div class="modal-footer">
@@ -310,7 +335,7 @@ export default {
 
 <style>
 /* GLOBAL STYLES */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap');
 
 body {
@@ -350,6 +375,11 @@ body {
     background: linear-gradient(180deg, #0a1428 0%, #020206 100%);
 }
 
+.bg-main-glow {
+    background: radial-gradient(ellipse at top, rgba(0, 167, 220, 0.25) 0%, rgba(0, 0, 0, 0) 80%),
+                linear-gradient(180deg, #0a1428 0%, #020206 100%);
+}
+
 .bg-gradient-dark {
     background: linear-gradient(135deg, #0f172a, #1e293b);
 }
@@ -375,6 +405,12 @@ body {
 
 h1 {
   font-size: 2rem;
+}
+
+.clock-display {
+  font-size: 6rem;
+  font-weight: 300;
+  margin: 0;
 }
 
 body, html, #app {

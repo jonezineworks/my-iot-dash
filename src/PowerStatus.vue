@@ -1,5 +1,5 @@
 <template>
-  <div class="m-auto p-4 text-end bg-gradient-dark bg-opacity-25 rounded-4 shadow cursor-pointer hover-bright" @click="$emit('show-detail')">
+  <div class="m-auto p-4 text-end bg-gradient-dark bg-opacity-25 rounded-4 shadow cursor-pointer hover-bright" style="min-width: 17rem" @click="$emit('show-detail')">
     <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
     <hr/>
     <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25':''">
@@ -7,15 +7,20 @@
       <span class="text-info small"> W</span>
     </h1>
     <p class="mb-0 text-secondary">Total Hoje</p>
-    <h2 class="mb-0 " style="line-height: 1.6rem;" :class="data.Today === 0 ? 'opacity-25':''">
+    <h2 class="mb-2 " style="line-height: 1.6rem;" :class="data.Today === 0 ? 'opacity-25':''">
       <span class="text-monospace">{{ data.Today.toFixed(3) }} </span>
       <span class="text-info small "> kWh</span>
     </h2>
-    <hr/>
+
+      <h1 class="mb-0" style="line-height: 1.6rem;">
+          <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
+          <span class="text-warning"> €</span></h1>
+    <!--<hr/>
     <p class="mb-0 text-secondary">Total Mes</p>
     <h1 class="mb-0" style="line-height: 1.6rem;">
       <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
       <span class="text-warning"> €</span></h1>
+      -->
   </div>
 </template>
 <script>
