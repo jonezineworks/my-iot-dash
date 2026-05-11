@@ -197,7 +197,7 @@ export default {
 </script>
 
 <template>
-  <div class="vh-100 vh-100 m-0 text-light bg-main-glow rounded-4 d-flex flex-column justify-content-between">
+  <div class="vh-100 vh-100 m-0 text-light bg-main-glow rounded-5 d-flex flex-column justify-content-between overflow-hidden">
 
     <div class="d-flex justify-content-center mt-4" v-if="showClock && !selectedPower">
       <h1 class="clock-display">{{ currentTime }}</h1>
@@ -376,8 +376,8 @@ body {
 }
 
 .bg-main-glow {
-    background: radial-gradient(ellipse at top, rgba(92, 156, 255, 0.15) 0%, rgba(8, 13, 44, 0) 80%),
-                linear-gradient(180deg, #0d143c 0%, #080d2c 100%);
+    background: radial-gradient(ellipse at top, rgba(92, 156, 255, 0.2) 0%, rgba(5, 8, 28, 0) 100%),
+                linear-gradient(180deg, #080d2c 0%, #05081c 100%);
 }
 
 .bg-gradient-dark {
@@ -393,7 +393,7 @@ body {
 .lucien-card {
   position: relative;
   padding: 1px;
-  background: linear-gradient(180deg, rgba(92, 156, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(180deg, rgba(92, 156, 255, 0.4) 0%, rgba(255, 255, 255, 0.02) 100%);
   border-radius: 1.5rem; /* Matches rounded-4 */
   overflow: hidden;
 }
@@ -437,7 +437,7 @@ h1 {
 }
 
 body, html, #app {
-  background: #080d2c !important;
+  background: #05081c !important;
 }
 
 .blink-1 {
