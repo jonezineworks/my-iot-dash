@@ -1,5 +1,5 @@
 <template>
-  <div class="m-auto p-4 text-end bg-gradient-dark bg-opacity-25 rounded-4 shadow cursor-pointer hover-bright" style="min-width: 17rem" @click="$emit('show-detail')">
+  <div class="m-auto p-4 text-end rounded-4 shadow cursor-pointer hover-bright" style="min-width: 17rem; background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.75))" @click="$emit('show-detail')">
     <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
     <hr/>
     <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25':''">
