@@ -1,9 +1,10 @@
 <script xmlns="http://www.w3.org/1999/html">
 import gsap from 'gsap';
 import PowerStatus from "@/PowerStatus.vue";
+import PowerDetail from "@/PowerDetail.vue";
 
 export default {
-  components: {PowerStatus},
+  components: {PowerStatus, PowerDetail},
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
   data() {
@@ -23,6 +24,8 @@ export default {
       car2Data: {Power: 0, Today: 0},
       weatherData: {description: "", temp: 0, humidity: 0, icon: ""},
       internetCheck: {online: false},
+      selectedPower: null,
+      reconnectDelay: 1000,
     }
   },
 
@@ -50,39 +53,88 @@ export default {
       this.connection = new WebSocket("ws://" + this.myIotServer + "/");
 
       this.connection.onmessage = function (event) {
-        let wsData = JSON.parse(event.data);
-        if (wsData.measureType === 'house') {
-          that.houseData = wsData;
-        }
-        if (wsData.measureType === 'solar') {
-          that.solarData = wsData;
-        }
-        if (wsData.measureType === 'weather') {
-          that.weatherData = wsData;
-        }
-        if (wsData.measureType === 'internetCheck') {
-          that.internetCheck = wsData;
+        try {
+          let wsData = JSON.parse(event.data);
+          if (wsData.measureType === 'house') {
+            that.houseData = wsData;
+            if (that.selectedPower && that.selectedPower.type === 'house') that.selectedPower.data = wsData;
+          }
+          if (wsData.measureType === 'solar') {
+            that.solarData = wsData;
+            if (that.selectedPower && that.selectedPower.type === 'solar') that.selectedPower.data = wsData;
+          }
+          if (wsData.measureType === 'weather') {
+            that.weatherData = wsData;
+          }
+          if (wsData.measureType === 'internetCheck') {
+            that.internetCheck = wsData;
+          }
+        } catch (e) {
+          console.error("Error parsing WebSocket message", e);
         }
       };
 
       this.connection.onopen = function (event) {
-        console.log(event);
-        console.log("Successfully connected to the echo websocket server...");
+        console.log("Successfully connected to the WebSocket server");
         that.getWeather();
         that.checkInternet();
         that.myIotServerConnected = true;
+        that.reconnectDelay = 1000; // Reset delay on successful connection
+        that.startHeartbeat();
       };
 
       this.connection.onclose = function () {
+        console.log("WebSocket connection closed. Attempting to reconnect...");
+        that.stopHeartbeat();
         that.myIotServerConnected = false;
-        that.connectWebsocket();
+        setTimeout(() => {
+          that.connectWebsocket();
+        }, that.reconnectDelay);
+        // Exponential backoff: increase delay for next attempt, up to 30 seconds
+        that.reconnectDelay = Math.min(that.reconnectDelay * 2, 30000);
       };
+
+      this.connection.onerror = function (error) {
+        console.error("WebSocket error:", error);
+        that.connection.close();
+      };
+    },
+    startHeartbeat() {
+      this.stopHeartbeat();
+      this.heartbeatInterval = setInterval(() => {
+        if (this.connection && this.connection.readyState === WebSocket.OPEN) {
+          this.connection.send(JSON.stringify({type: "ping"}));
+        }
+      }, 30000); // Send ping every 30 seconds
+    },
+    stopHeartbeat() {
+      if (this.heartbeatInterval) {
+        clearInterval(this.heartbeatInterval);
+        this.heartbeatInterval = null;
+      }
     },
     getWeather() {
       fetch('http://' + this.myIotServer + '/weather');
     },
     checkInternet() {
       fetch('http://' + this.myIotServer + '/checkInternet');
+    },
+    showDetail(type, title, icon) {
+      let data;
+      if (type === 'house') data = this.houseData;
+      if (type === 'solar') data = this.solarData;
+      if (type === 'car1') data = this.car1Data;
+      if (type === 'car2') data = this.car2Data;
+
+      this.selectedPower = {
+        type,
+        title,
+        icon,
+        data
+      };
+    },
+    closeDetail() {
+      this.selectedPower = null;
     }
   },
   watch: {
@@ -118,6 +170,13 @@ export default {
     this.connectWebsocket();
     //this.getWeather();
     //this.checkInternet();
+  },
+  unmounted() {
+    if (this.connection) {
+      this.connection.onclose = null;
+      this.connection.close();
+    }
+    this.stopHeartbeat();
   }
 }
 </script>
@@ -125,7 +184,7 @@ export default {
 <template>
   <div class="vh-100 vh-100 m-0 text-light bg-gradient-dark-2 rounded-4 d-flex flex-column justify-content-between">
 
-    <div class="d-flex justify-content-center" v-if="showWeather">
+    <div class="d-flex justify-content-center" v-if="showWeather && !selectedPower">
       <div class="d-flex justify-content-around align-content-center rounded-bottom-4 bg-gradient-dark bg-opacity-25 px-5">
         <div class="p-2 text-center d-flex align-content-center">
             <h2 class="mb-0 ml-4 text-capitalize">{{ weatherData.description }}</h2>
@@ -143,14 +202,22 @@ export default {
       </div>
     </div>
 
-    <div class="flex-fill d-flex justify-content-center align-content-center ">
+    <div class="flex-fill d-flex justify-content-center align-content-center " v-if="!selectedPower">
 
-      <PowerStatus title="Consumo Casa"  title-icon="bi-lightning-fill" :data="houseData" v-if="showHouse"/>
-      <PowerStatus title="Energia Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar"/>
-      <PowerStatus title="Consumo BEV"    title-icon="bi-ev-front" :data="car1Data"  v-if="showCar1"/>
-      <PowerStatus title="Consumo BEV2"   title-icon="bi-ev-front" :data="car2Data"  v-if="showCar2"/>
+      <PowerStatus title="Rede"  title-icon="bi-lightning-fill" :data="houseData" v-if="showHouse" @show-detail="showDetail('house', 'Rede', 'bi-lightning-fill')"/>
+      <PowerStatus title="Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar" @show-detail="showDetail('solar', 'Solar', 'bi-brightness-high-fill')"/>
+      <PowerStatus title="BEV"    title-icon="bi-ev-front" :data="car1Data"  v-if="showCar1" @show-detail="showDetail('car1', 'BEV', 'bi-ev-front')"/>
+      <PowerStatus title="BEV2"   title-icon="bi-ev-front" :data="car2Data"  v-if="showCar2" @show-detail="showDetail('car2', 'BEV2', 'bi-ev-front')"/>
 
     </div>
+
+    <PowerDetail
+        v-else
+        :title="selectedPower.title"
+        :title-icon="selectedPower.icon"
+        :data="selectedPower.data"
+        @close="closeDetail"
+    />
 
     <div class="m-0 py-3 px-5 d-flex justify-content-between align-items-center rounded-top-4"
          style="font-size: 1.4rem;">
