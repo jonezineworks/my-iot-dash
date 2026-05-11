@@ -1,26 +1,22 @@
 <template>
-  <div class="m-auto p-4 text-end rounded-4 shadow cursor-pointer hover-bright" style="min-width: 17rem; background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.75))" @click="$emit('show-detail')">
-    <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
-    <hr/>
-    <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25':''">
-      <span class="text-monospace">{{ dataPowerEffect.toFixed(0) }}</span>
-      <span class="text-info small"> W</span>
-    </h1>
-    <p class="mb-0 text-secondary">Total Hoje</p>
-    <h2 class="mb-2 " style="line-height: 1.6rem;" :class="data.Today === 0 ? 'opacity-25':''">
-      <span class="text-monospace">{{ data.Today.toFixed(3) }} </span>
-      <span class="text-info small "> kWh</span>
-    </h2>
+  <div class="m-auto cursor-pointer lucien-card" style="min-width: 17rem;" @click="$emit('show-detail')">
+    <div class="lucien-card-inner text-end">
+      <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
+      <hr style="border-color: rgba(92, 156, 255, 0.2)"/>
+      <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25':''">
+        <span class="text-monospace">{{ dataPowerEffect.toFixed(0) }}</span>
+        <span class="text-info small"> W</span>
+      </h1>
+      <p class="mb-0 text-secondary">Total Hoje</p>
+      <h2 class="mb-2 " style="line-height: 1.6rem;" :class="data.Today === 0 ? 'opacity-25':''">
+        <span class="text-monospace">{{ data.Today.toFixed(3) }} </span>
+        <span class="text-info small "> kWh</span>
+      </h2>
 
       <h1 class="mb-0" style="line-height: 1.6rem;">
-          <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
-          <span class="text-warning"> €</span></h1>
-    <!--<hr/>
-    <p class="mb-0 text-secondary">Total Mes</p>
-    <h1 class="mb-0" style="line-height: 1.6rem;">
-      <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
-      <span class="text-warning"> €</span></h1>
-      -->
+        <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
+        <span class="text-warning"> €</span></h1>
+    </div>
   </div>
 </template>
 <script>
@@ -47,6 +43,14 @@ export default {
 }
 </script>
 <style scoped>
+.text-info {
+  color: #5c9cff !important;
+}
+
+.text-warning {
+  color: #ccd5e5 !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }

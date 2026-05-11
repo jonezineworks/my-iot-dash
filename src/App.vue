@@ -363,31 +363,46 @@ body {
 }
 
 .bg-dark {
-    background: #0f172a;
+    background: #080d2c;
 }
 
 .bg-gradient-blue {
-    background: linear-gradient(326deg, #0a0a28 7.97%, #094649 97.66%);
+    background: linear-gradient(326deg, #080d2c 7.97%, #151e41 97.66%);
 
 }
 
 .bg-gradient-dark-2 {
-    background: linear-gradient(180deg, #0a1428 0%, #020206 100%);
+    background: linear-gradient(180deg, #0d143c 0%, #080d2c 100%);
 }
 
 .bg-main-glow {
-    background: radial-gradient(ellipse at top, rgba(0, 167, 220, 0.25) 0%, rgba(0, 0, 0, 0) 80%),
-                linear-gradient(180deg, #0a1428 0%, #020206 100%);
+    background: radial-gradient(ellipse at top, rgba(92, 156, 255, 0.15) 0%, rgba(8, 13, 44, 0) 80%),
+                linear-gradient(180deg, #0d143c 0%, #080d2c 100%);
 }
 
 .bg-gradient-dark {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
+    background: linear-gradient(135deg, #0d143c, #080d2c);
 }
 
 .bg-cyan-gradient {
-    background: linear-gradient(325deg, #00A7DC 16.5%, #00cddc 48.2%, #01dccf 80.24%) !important;
+    background: linear-gradient(325deg, #5c9cff 16.5%, #4a8cf0 80.24%) !important;
     border: none !important;
     color: white !important;
+}
+
+.lucien-card {
+  position: relative;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(92, 156, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 1.5rem; /* Matches rounded-4 */
+  overflow: hidden;
+}
+
+.lucien-card-inner {
+  background: linear-gradient(180deg, #151e41 0%, #080d2c 100%);
+  border-radius: calc(1.5rem - 1px);
+  padding: 1.5rem;
+  height: 100%;
 }
 
 .btn {
@@ -396,6 +411,14 @@ body {
 </style>
 
 <style scoped>
+.text-info {
+  color: #5c9cff !important;
+}
+
+.text-warning {
+  color: #ccd5e5 !important;
+}
+
 .text-monospace {
   font-family: "Chivo Mono", monospace;
   font-optical-sizing: auto;
@@ -408,13 +431,13 @@ h1 {
 }
 
 .clock-display {
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: 300;
   margin: 0;
 }
 
 body, html, #app {
-  background: black !important;
+  background: #080d2c !important;
 }
 
 .blink-1 {
