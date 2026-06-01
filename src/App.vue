@@ -66,6 +66,14 @@ export default {
             that.solarData = wsData;
             if (that.selectedPower && that.selectedPower.type === 'solar') that.selectedPower.data = wsData;
           }
+        if (wsData.measureType === 'car1') {
+            that.car1Data = wsData;
+            if (that.selectedPower && that.selectedPower.type === 'car1') that.selectedPower.data = wsData;
+        }
+        if (wsData.measureType === 'car2') {
+            that.car2Data = wsData;
+            if (that.selectedPower && that.selectedPower.type === 'car2') that.selectedPower.data = wsData;
+        }
           if (wsData.measureType === 'weather') {
             that.weatherData = wsData;
           }
