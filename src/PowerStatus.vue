@@ -3,14 +3,16 @@
     <div class="lucien-card-inner text-end">
       <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
       <hr style="border-color: rgba(92, 156, 255, 0.2)"/>
-      <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25':''">
-        <span class="text-monospace">{{ dataPowerEffect.toFixed(0) }}</span>
-        <span class="text-info small"> W</span>
-      </h1>
+      <div class="d-inline-block px-3 py-1">
+        <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25' : ''">
+          <span class="text-monospace status-transition" :class="statusClass">{{ dataPowerEffect.toFixed(0) }}</span>
+          <span class="small status-transition" :class="statusClass ? statusClass : 'text-info'"> W</span>
+        </h1>
+      </div>
       <p class="mb-0 text-secondary">Total Hoje</p>
       <h2 class="mb-2 " style="line-height: 1.6rem;" :class="data.Today === 0 ? 'opacity-25':''">
         <span class="text-monospace">{{ data.Today.toFixed(3) }} </span>
-        <span class="text-info small "> kWh</span>
+        <span class="small text-info"> kWh</span>
       </h2>
 
       <h1 class="mb-0" style="line-height: 1.6rem;">
@@ -28,8 +30,26 @@ export default {
     data: {type: Object},
     title: "",
     titleIcon: "",
+    warningThreshold: {type: Number, default: 0},
+    dangerThreshold: {type: Number, default: 0},
+    contractedPower: {type: Number, default: 0},
   },
   emits: ['show-detail'],
+  computed: {
+    statusClass() {
+      if (!this.contractedPower || !this.data || !this.data.Power) return '';
+      
+      const usagePercent = (this.data.Power / this.contractedPower) * 100;
+      
+      if (this.dangerThreshold > 0 && usagePercent >= this.dangerThreshold) {
+        return 'text-danger blink-1';
+      } else if (this.warningThreshold > 0 && usagePercent >= this.warningThreshold) {
+        return 'text-warning';
+      }
+      
+      return '';
+    }
+  },
   data() {
     return {
       dataPowerEffect: 0,
@@ -47,9 +67,7 @@ export default {
   color: #5c9cff !important;
 }
 
-.text-warning {
-  color: #ccd5e5 !important;
-}
+
 
 .cursor-pointer {
   cursor: pointer;
@@ -65,6 +83,18 @@ export default {
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
+}
+
+.status-transition {
+  transition: color 0.5s ease;
+}
+
+.text-warning-status {
+  color: #ffda6a !important;
+}
+
+.text-danger-status {
+  color: #dc3545 !important;
 }
 
 h1 {

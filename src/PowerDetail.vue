@@ -49,8 +49,8 @@
             <h4 class="text-info border-bottom border-secondary border-opacity-25 pb-2 mb-3">Informação Geral</h4>
             <div class="mb-4">
               <p class="text-secondary mb-1 small">POTÊNCIA ATUAL</p>
-              <h2 class="text-monospace mb-0">
-                {{ data.Power.toFixed(0) }} <span class="text-info small">W</span>
+              <h2 class="text-monospace mb-0 status-transition" :class="statusClass">
+                {{ data.Power.toFixed(0) }} <span class="small" :class="statusClass ? statusClass : 'text-info'">W</span>
               </h2>
             </div>
 
@@ -96,9 +96,27 @@ export default {
   props: {
     data: { type: Object, required: true },
     title: { type: String, default: '' },
-    titleIcon: { type: String, default: '' }
+    titleIcon: { type: String, default: '' },
+    warningThreshold: { type: Number, default: 0 },
+    dangerThreshold: { type: Number, default: 0 },
+    contractedPower: { type: Number, default: 0 },
   },
   emits: ['close'],
+  computed: {
+    statusClass() {
+      if (!this.contractedPower || !this.data || !this.data.Power) return '';
+      
+      const usagePercent = (this.data.Power / this.contractedPower) * 100;
+      
+      if (this.dangerThreshold > 0 && usagePercent >= this.dangerThreshold) {
+        return 'text-danger blink-1';
+      } else if (this.warningThreshold > 0 && usagePercent >= this.warningThreshold) {
+        return 'text-warning';
+      }
+      
+      return '';
+    }
+  },
   mounted() {
     console.log("PowerDetail mounted for:", this.title);
   }
@@ -112,6 +130,18 @@ export default {
 
 .text-info {
   color: #5c9cff !important;
+}
+
+.text-warning-status {
+  color: #ffda6a !important;
+}
+
+.text-danger-status {
+  color: #dc3545 !important;
+}
+
+.status-transition {
+  transition: color 0.5s ease;
 }
 
 .text-warning {
