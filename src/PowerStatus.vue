@@ -16,7 +16,7 @@
       </h2>
 
       <h1 class="mb-0" style="line-height: 1.6rem;">
-        <span class="text-monospace">{{ ((data?.Today ?? 0) * 0.14).toFixed(2) }}</span>
+        <span class="text-monospace">{{ (data?.TodayPrice ?? 0).toFixed(2) }}</span>
         <span class="text-warning"> €</span></h1>
     </div>
 
