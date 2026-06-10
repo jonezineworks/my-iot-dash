@@ -50,14 +50,14 @@
             <div class="mb-4">
               <p class="text-secondary mb-1 small">POTÊNCIA ATUAL</p>
               <h2 class="text-monospace mb-0 status-transition" :class="statusClass">
-                {{ data.Power.toFixed(0) }} <span class="small" :class="statusClass ? statusClass : 'text-info'">W</span>
+                {{ (data?.Power ?? 0).toFixed(0) }} <span class="small" :class="statusClass ? statusClass : 'text-info'">W</span>
               </h2>
             </div>
 
             <div class="mb-4">
               <p class="text-secondary mb-1 small">TOTAL HOJE</p>
               <h3 class="text-monospace mb-0">
-                {{ data.Today.toFixed(3) }} <span class="text-info small">kWh</span>
+                {{ (data?.Today ?? 0).toFixed(3) }} <span class="text-info small">kWh</span>
               </h3>
             </div>
 
@@ -65,7 +65,7 @@
             <div class="mb-4">
               <p class="text-secondary mb-1 small">CUSTO ESTIMADO (MÊS)</p>
               <h2 class="text-monospace mb-0 text-warning">
-                {{ (data.Today * 30 * 0.14).toFixed(2) }} <span class="small">€</span>
+                {{ ((data?.Today ?? 0) * 30 * 0.14).toFixed(2) }} <span class="small">€</span>
               </h2>
               <p class="text-muted small">* Baseado em projeção mensal</p>
             </div>
@@ -73,7 +73,7 @@
             <div class="mb-4">
               <p class="text-secondary mb-1 small">POUPANÇA CO2</p>
               <h3 class="text-monospace mb-0 text-success">
-                {{ (data.Today * 0.233).toFixed(2) }} <span class="small">kg</span>
+                {{ ((data?.Today ?? 0) * 0.233).toFixed(2) }} <span class="small">kg</span>
               </h3>
             </div>
 
@@ -104,9 +104,9 @@ export default {
   emits: ['close'],
   computed: {
     statusClass() {
-      if (!this.contractedPower || !this.data || !this.data.Power) return '';
+      if (!this.contractedPower || !this.data || (this.data?.Power ?? 0) === 0) return '';
       
-      const usagePercent = (this.data.Power / this.contractedPower) * 100;
+      const usagePercent = ((this.data?.Power ?? 0) / this.contractedPower) * 100;
       
       if (this.dangerThreshold > 0 && usagePercent >= this.dangerThreshold) {
         return 'text-danger blink-1';

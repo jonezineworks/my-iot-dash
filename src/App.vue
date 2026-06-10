@@ -17,6 +17,7 @@ export default {
       showCar2: false,
       showWeather: true,
       showClock: true,
+      showTotal: true,
       currentTime: "",
       houseData: {Power: 0, Today: 0},
       houseDataPower: 0,
@@ -83,18 +84,39 @@ export default {
     'energyConfig.dangerThreshold'(newVal) {
       // Handled by @change
     },
+    showHouse(newVal) {
+      this.saveConfig();
+    },
+    showSolar(newVal) {
+      this.saveConfig();
+    },
+    showCar1(newVal) {
+      this.saveConfig();
+    },
+    showCar2(newVal) {
+      this.saveConfig();
+    },
+    showWeather(newVal) {
+      this.saveConfig();
+    },
+    showClock(newVal) {
+      this.saveConfig();
+    },
+    showTotal(newVal) {
+      this.saveConfig();
+    },
     houseData(data) {
-      gsap.to(this, {duration: 6, houseDataPower: Number(data.Power) || 0})
+      gsap.to(this, {duration: 6, houseDataPower: Number(data?.Power ?? 0) || 0})
     },
     solarData(data) {
-      gsap.to(this, {duration: 6, solarDataPower: Number(data.Power) || 0})
+      gsap.to(this, {duration: 6, solarDataPower: Number(data?.Power ?? 0) || 0})
     }
   },
   computed: {
     mainGlowClass() {
-      if (!this.energyConfig.contractedPowerKw || !this.houseData || !this.houseData.Power) return 'bg-main-glow';
+      if (!this.energyConfig.contractedPowerKw || !this.houseData || (this.houseData?.Power ?? 0) === 0) return 'bg-main-glow';
 
-      const usagePercent = (this.houseData.Power / (this.energyConfig.contractedPowerKw * 1000)) * 100;
+      const usagePercent = ((this.houseData?.Power ?? 0) / (this.energyConfig.contractedPowerKw * 1000)) * 100;
 
       if (this.energyConfig.dangerThreshold > 0 && usagePercent >= this.energyConfig.dangerThreshold) {
         return 'bg-main-glow-danger';
@@ -114,6 +136,7 @@ export default {
       window.localStorage.setItem("showCar2", this.showCar2);
       window.localStorage.setItem("showWeather", this.showWeather);
       window.localStorage.setItem("showClock", this.showClock);
+      window.localStorage.setItem("showTotal", this.showTotal);
       window.localStorage.setItem("energyConfig", JSON.stringify(this.energyConfig));
 
       fetch('http://' + this.myIotServer + '/energyConfig', {
@@ -290,6 +313,9 @@ export default {
     if (window.localStorage.getItem("showClock")) {
       this.showClock = window.localStorage.getItem("showClock") === 'true';
     }
+    if (window.localStorage.getItem("showTotal")) {
+      this.showTotal = window.localStorage.getItem("showTotal") === 'true';
+    }
     if (window.localStorage.getItem("energyConfig")) {
       try {
         const storedConfig = JSON.parse(window.localStorage.getItem("energyConfig"));
@@ -334,14 +360,14 @@ export default {
     <div class="d-flex justify-content-center" v-if="showWeather && !selectedPower">
       <div class="d-flex justify-content-around align-content-center rounded-bottom-4 px-5">
         <div class="p-3 text-center d-flex align-content-center">
-            <h3 class="mb-0 ml-4 text-capitalize opacity-75">{{ weatherData.description }}</h3>
+            <h3 class="mb-0 ml-4 text-capitalize opacity-75">{{ weatherData?.description ?? '' }}</h3>
 
           <div class="mx-2 d-flex">
             <h3 class="my-0 mx-2"><i
-              class="bi bi-thermometer-half"/>{{ weatherData.temp.toFixed(0) }}<span class="text-info small">ºC </span>
+              class="bi bi-thermometer-half"/>{{ (weatherData?.temp ?? 0).toFixed(0) }}<span class="text-info small">ºC </span>
             </h3>
             <h3 class="my-0 mx-2"><i
-              class="bi bi-droplet"/>{{ weatherData.humidity }}<span class="text-info small">% </span></h3>
+              class="bi bi-droplet"/>{{ weatherData?.humidity ?? 0 }}<span class="text-info small">% </span></h3>
           </div>
 
           <!--<img class="m-auto" v-if="weatherData.icon" :src="weatherData.icon" alt="" width="120"/>-->
@@ -360,10 +386,11 @@ export default {
           :warning-threshold="energyConfig.warningThreshold"
           :danger-threshold="energyConfig.dangerThreshold"
           :contracted-power="energyConfig.contractedPowerKw * 1000"
+          :show-total="showTotal"
       />
-      <PowerStatus title="Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar" @show-detail="showDetail('solar', 'Solar', 'bi-brightness-high-fill')"/>
-      <PowerStatus title="BEV"    title-icon="bi-ev-front" :data="car1Data"  v-if="showCar1" @show-detail="showDetail('car1', 'BEV', 'bi-ev-front')"/>
-      <PowerStatus title="BEV2"   title-icon="bi-ev-front" :data="car2Data"  v-if="showCar2" @show-detail="showDetail('car2', 'BEV2', 'bi-ev-front')"/>
+      <PowerStatus title="Solar" title-icon="bi-brightness-high-fill" :data="solarData" v-if="showSolar" @show-detail="showDetail('solar', 'Solar', 'bi-brightness-high-fill')" :show-total="showTotal"/>
+      <PowerStatus title="BEV"    title-icon="bi-ev-front" :data="car1Data"  v-if="showCar1" @show-detail="showDetail('car1', 'BEV', 'bi-ev-front')" :show-total="showTotal"/>
+      <PowerStatus title="BEV2"   title-icon="bi-ev-front" :data="car2Data"  v-if="showCar2" @show-detail="showDetail('car2', 'BEV2', 'bi-ev-front')" :show-total="showTotal"/>
 
     </div>
 
@@ -393,7 +420,7 @@ export default {
         <div class="d-flex align-items-center">
 
           <span class="text-light mx-2">Internet</span>
-          <i :class="internetCheck.online ? 'text-success':'text-danger blink-2'"
+          <i :class="(internetCheck?.online ?? false) ? 'text-success':'text-danger blink-2'"
              class="bi bi-check-circle-fill"></i>
 
         </div>
@@ -510,6 +537,15 @@ export default {
                           <div class="small text-muted font-monospace">top-clock-div</div>
                         </div>
                         <input class="form-check-input ms-0" type="checkbox" id="showClock" v-model="showClock">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-check form-switch p-3 bg-white rounded-3 shadow-sm d-flex align-items-center justify-content-between">
+                        <div>
+                          <label class="form-check-label fw-medium" for="showTotal">Total Values</label>
+                          <div class="small text-muted font-monospace">PowerStatus/Total</div>
+                        </div>
+                        <input class="form-check-input ms-0" type="checkbox" id="showTotal" v-model="showTotal" @change="saveConfig">
                       </div>
                     </div>
                   </div>

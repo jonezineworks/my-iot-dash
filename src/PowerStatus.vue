@@ -4,30 +4,30 @@
       <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
       <hr style="border-color: rgba(92, 156, 255, 0.2)"/>
       <div class="d-inline-block px-3 py-1">
-        <h1 style="font-size: 4rem; line-height: 3rem" :class="data.Power === 0 ? 'opacity-25' : ''">
+        <h1 style="font-size: 4rem; line-height: 3rem" :class="(data?.Power ?? 0) === 0 ? 'opacity-25' : ''">
           <span class="text-monospace status-transition" :class="statusClass">{{ dataPowerEffect.toFixed(0) }}</span>
           <span class="small status-transition" :class="statusClass ? statusClass : 'text-info'"> W</span>
         </h1>
       </div>
       <p class="mb-0 text-secondary">Total Hoje</p>
-      <h2 class="mb-2 " style="line-height: 1.6rem;" :class="data.Today === 0 ? 'opacity-25':''">
-        <span class="text-monospace">{{ data.Today.toFixed(3) }} </span>
+      <h2 class="mb-2 " style="line-height: 1.6rem;" :class="(data?.Today ?? 0) === 0 ? 'opacity-25':''">
+        <span class="text-monospace">{{ (data?.Today ?? 0).toFixed(3) }} </span>
         <span class="small text-info"> kWh</span>
       </h2>
 
       <h1 class="mb-0" style="line-height: 1.6rem;">
-        <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
+        <span class="text-monospace">{{ ((data?.Today ?? 0) * 0.14).toFixed(2) }}</span>
         <span class="text-warning"> €</span></h1>
     </div>
 
-      <div class="text-end" style="padding: 0.5rem 1.5rem 0.5rem 1.5rem;">
+      <div class="text-end" style="padding: 0.5rem 1.5rem 0.5rem 1.5rem;" v-if="showTotal">
       <p class="mb-0 text-secondary">Total</p>
         <h1 class="" style="line-height: 1.6rem;">
-          <span class="text-monospace">{{ data.Total.toFixed(0) }}</span>
+          <span class="text-monospace">{{ (data?.Total ?? 0).toFixed(0) }}</span>
           <span class="text-info"> kWh</span></h1>
 
         <h1 class="" style="line-height: 1.6rem;">
-          <span class="text-monospace">{{ data.TotalPrice.toFixed(2) }}</span>
+          <span class="text-monospace">{{ (data?.TotalPrice ?? 0).toFixed(2) }}</span>
           <span class="text-warning"> €</span></h1>
       </div>
   </div>
@@ -44,13 +44,14 @@ export default {
     warningThreshold: {type: Number, default: 0},
     dangerThreshold: {type: Number, default: 0},
     contractedPower: {type: Number, default: 0},
+    showTotal: {type: Boolean, default: true},
   },
   emits: ['show-detail'],
   computed: {
     statusClass() {
-      if (!this.contractedPower || !this.data || !this.data.Power) return '';
+      if (!this.contractedPower || !this.data || (this.data?.Power ?? 0) === 0) return '';
       
-      const usagePercent = (this.data.Power / this.contractedPower) * 100;
+      const usagePercent = ((this.data?.Power ?? 0) / this.contractedPower) * 100;
       
       if (this.dangerThreshold > 0 && usagePercent >= this.dangerThreshold) {
         return 'text-danger blink-1';
@@ -68,7 +69,7 @@ export default {
   },
   watch: {
     data(data) {
-      gsap.to(this, {duration: 6, dataPowerEffect: Number(data.Power) || 0})
+      gsap.to(this, {duration: 6, dataPowerEffect: Number(data?.Power ?? 0) || 0})
     }
   },
 }
