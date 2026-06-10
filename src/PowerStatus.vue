@@ -3,7 +3,7 @@
     <div class="lucien-card-inner text-end">
       <h2 class="mb-0 text-info"><i class="bi text-light" :class="titleIcon"/> {{title}}</h2>
       <hr style="border-color: rgba(92, 156, 255, 0.2)"/>
-      <div class="d-inline-block px-3 py-1">
+      <div class="">
         <h1 style="font-size: 4rem; line-height: 3rem" :class="(data?.Power ?? 0) === 0 ? 'opacity-25' : ''">
           <span class="text-monospace status-transition" :class="statusClass">{{ dataPowerEffect.toFixed(0) }}</span>
           <span class="small status-transition" :class="statusClass ? statusClass : 'text-info'"> W</span>
