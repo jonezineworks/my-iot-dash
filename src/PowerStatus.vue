@@ -19,6 +19,17 @@
         <span class="text-monospace">{{ (data.Today * 0.14).toFixed(2) }}</span>
         <span class="text-warning"> €</span></h1>
     </div>
+
+      <div class="text-end" style="padding: 0.5rem 1.5rem 0.5rem 1.5rem;">
+      <p class="mb-0 text-secondary">Total</p>
+        <h1 class="" style="line-height: 1.6rem;">
+          <span class="text-monospace">{{ data.Total.toFixed(0) }}</span>
+          <span class="text-info"> kWh</span></h1>
+
+        <h1 class="" style="line-height: 1.6rem;">
+          <span class="text-monospace">{{ data.TotalPrice.toFixed(2) }}</span>
+          <span class="text-warning"> €</span></h1>
+      </div>
   </div>
 </template>
 <script>
