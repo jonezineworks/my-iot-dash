@@ -61,3 +61,18 @@ As shown below:
 ....
 android:usesCleartextTraffic="true"
 ....>
+
+1. Android is blocking cleartext traffic (most likely)
+
+On Android 9+ (API 28 and newer), ws:// is considered cleartext and is blocked by default.
+
+In your config.xml, add:
+
+<platform name="android">
+    <edit-config
+        file="app/src/main/AndroidManifest.xml"
+        mode="merge"
+        target="/manifest/application">
+        <application android:usesCleartextTraffic="true" />
+    </edit-config>
+</platform>
